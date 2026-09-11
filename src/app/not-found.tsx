@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Container } from "@/components/layout";
+import { LinkButton } from "@/components/ui";
 
 export default function NotFound() {
   return (
@@ -8,15 +8,12 @@ export default function NotFound() {
       className="flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center"
     >
       <h1 className="text-2xl font-semibold tracking-tight">Page not found</h1>
-      <p className="text-foreground/70 max-w-md text-base leading-7">
+      <p className="text-foreground-secondary max-w-md text-base leading-normal">
         The page you&apos;re looking for doesn&apos;t exist or has moved.
       </p>
-      <Link
-        href="/"
-        className="border-foreground/20 hover:bg-foreground/10 rounded-full border px-5 py-2 text-sm font-medium transition-colors"
-      >
+      <LinkButton href="/" variant="secondary">
         Back to home
-      </Link>
+      </LinkButton>
     </Container>
   );
 }

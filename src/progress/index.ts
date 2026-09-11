@@ -1,1 +1,6 @@
-export type { ProgressState, ConceptProgress, ProgressStore } from "./types";
+export type {
+  ProgressState,
+  MasteryLevel,
+  ConceptProgress,
+  ProgressStore,
+} from "./types";

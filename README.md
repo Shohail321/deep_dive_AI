@@ -86,7 +86,7 @@ Everything app-specific lives under `src/`.
 | Path                         | Responsibility                                                                  |
 | ---------------------------- | ------------------------------------------------------------------------------- |
 | `app/`                       | Next.js App Router routes only — thin pages that compose domain modules below.  |
-| `components/ui/`             | Generic, content-agnostic UI primitives (e.g. `Spinner`).                       |
+| `components/ui/`             | The design system: buttons, overlays, inputs, status and explanation surfaces.  |
 | `components/layout/`         | Structural layout primitives (e.g. `Container`).                                |
 | `content/`                   | Authored MDX lesson content. Empty until real lessons exist.                    |
 | `curriculum/metadata/`       | The concept schema (Zod) — id, track, prerequisites, status, etc.               |
@@ -102,7 +102,33 @@ Everything app-specific lives under `src/`.
 | `lib/`                       | Framework-agnostic utilities (e.g. `cn`).                                       |
 | `types/`                     | Cross-cutting types shared across domains. Empty until something needs it.      |
 | `config/`                    | App-wide configuration (site name, description, URL).                           |
-| `test/`                      | Shared test setup (Vitest).                                                     |
+| `test/`                      | Shared test setup (Vitest) and the axe accessibility helper.                    |
+| `proxy.ts`                   | Request-time gate for development-only routes.                                  |
+
+## Design system
+
+Visit **`/design-system`** with the dev server running. It is the living
+reference for every token and component, and it is blocked in production by
+`src/proxy.ts`.
+
+Tokens live in `src/app/globals.css` as Tailwind v4 `@theme` variables — the
+single source of truth for colour, typography, spacing, radii, shadows,
+motion, z-index layering, focus and the graph/learning/mastery state ramps.
+Read them there before hard-coding a value anywhere.
+
+Two rules are load-bearing:
+
+- **Accents are not text colours.** Track accents clear 3:1 against the
+  background, which covers fills, strokes, icons and borders but not small
+  text. Each has a lighter `-text` variant that clears 4.5:1; that is the only
+  variant allowed for label or body text.
+- **Colour never carries meaning alone.** Every track, tone, learning state
+  and mastery level is announced as text as well.
+
+Overlays (Modal, Drawer, BottomSheet, Popover, Tooltip, Tabs, Toggle, Slider)
+are built on Radix primitives rather than hand-rolled, because focus trapping,
+focus restoration, roving-tabindex navigation and ARIA wiring are solved
+problems it would be reckless to reimplement.
 
 ## Contribution conventions
 

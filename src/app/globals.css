@@ -1,31 +1,363 @@
 @import "tailwindcss";
 
-/*
- * Design tokens for Deep Dive AI.
- * Dark-only by design direction: background/foreground are not theme-switched.
- * Track colors (ai/ml/dl) are the recurring visual identity for the
- * AI -> ML -> DL curriculum hierarchy across the whole app.
- */
-:root {
-  --background: #050507;
-  --foreground: #f5f5f7;
+/* ==========================================================================
+   Design tokens — Deep Dive AI
+   --------------------------------------------------------------------------
+   Dark-only by design direction: nothing here is theme-switched.
 
+   Two rules govern the accent colours below:
+   1. Track accents (--color-ai/ml/dl) identify the AI -> ML -> DL hierarchy.
+      They clear 3:1 against the background, so they are safe for fills,
+      strokes, icons, and borders — but NOT for small text.
+   2. Every accent therefore has a `-text` variant, lightened to clear 4.5:1,
+      which is the only variant allowed for label or body text.
+   ========================================================================== */
+
+@theme {
+  /* ---- Surfaces ------------------------------------------------------- */
+  --color-background: #050507;
+  --color-surface: #111114;
+  --color-surface-raised: #18181c;
+
+  /* ---- Text ----------------------------------------------------------- */
+  --color-foreground: #f5f5f7;
+  --color-foreground-secondary: #a1a1a6;
+  /* Lightened from the specified #707077, which measures 4.14:1 against the
+     background — below the 4.5:1 required for normal-size text. This clears
+     4.9:1 and keeps the original's cool tint. #707077 is retained below for
+     non-text uses (dots, fills), which only need 3:1. */
+  --color-foreground-muted: #7c7c85;
+
+  /* ---- Borders -------------------------------------------------------- */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+
+  /* ---- Track accents -------------------------------------------------- */
   --color-ai: #8b5cf6;
   --color-ml: #3b82f6;
-  --color-dl: #22d3ee;
+  --color-dl: #06b6d4;
+  --color-ai-text: #c4b5fd;
+  --color-ml-text: #93c5fd;
+  --color-dl-text: #67e8f9;
+
+  /* ---- Semantic ------------------------------------------------------- */
+  --color-accent: var(--color-ai);
+  --color-accent-text: var(--color-ai-text);
+  /* Light enough to carry near-black label text at 7.4:1 — the base accent
+     cannot, in either direction. */
+  --color-accent-solid: #a78bfa;
+
+  --color-success: #10b981;
+  --color-success-text: #6ee7b7;
+  --color-warning: #f59e0b;
+  --color-warning-text: #fcd34d;
+  --color-danger: #f87171;
+  --color-danger-text: #fca5a5;
+  --color-info: #3b82f6;
+  --color-info-text: #93c5fd;
+
+  --color-focus-ring: #a78bfa;
+  --color-scrim: rgba(5, 5, 7, 0.72);
+
+  /* ---- Learning states (mirrors ProgressState in src/progress) ---------
+     Violet marks active engagement rather than reusing a track colour, so a
+     progress indicator never reads as a track label. */
+  --color-state-not-started: #707077;
+  --color-state-in-progress: #8b5cf6;
+  --color-state-completed: #10b981;
+
+  /* ---- Concept mastery (mirrors MasteryLevel in src/progress) ----------
+     A teal -> emerald ramp that brightens as mastery deepens. */
+  --color-mastery-unexplored: #707077;
+  --color-mastery-familiar: #0d9488;
+  --color-mastery-practiced: #10b981;
+  --color-mastery-mastered: #34d399;
+
+  /* ---- Knowledge-graph states ----------------------------------------- */
+  --color-graph-node: #18181c;
+  --color-graph-node-hover: #22222a;
+  --color-graph-node-active: #8b5cf6;
+  --color-graph-node-locked: #0d0d10;
+  --color-graph-edge: rgba(255, 255, 255, 0.14);
+  --color-graph-edge-active: rgba(139, 92, 246, 0.9);
+  --color-graph-edge-muted: rgba(255, 255, 255, 0.06);
+
+  /* ---- Spacing -------------------------------------------------------- */
+  /* 4px base; the numeric scale (p-2, gap-6, ...) derives from this. */
+  --spacing: 0.25rem;
+
+  /* ---- Typography ----------------------------------------------------- */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-2xs--letter-spacing: 0.02em;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.625rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.875rem;
+  --text-xl--letter-spacing: -0.01em;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-2xl--letter-spacing: -0.015em;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-3xl--letter-spacing: -0.02em;
+  --text-4xl: 2.5rem;
+  --text-4xl--line-height: 2.75rem;
+  --text-4xl--letter-spacing: -0.025em;
+  --text-5xl: 3.5rem;
+  --text-5xl--line-height: 3.625rem;
+  --text-5xl--letter-spacing: -0.03em;
+
+  /* Deliberately no bold/black: restraint is part of the visual identity. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.04em;
+
+  /* ---- Radii ---------------------------------------------------------- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  /* ---- Shadows -------------------------------------------------------- */
+  /* Paired with a hairline border rather than blur — no glassmorphism. */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-raised: 0 4px 12px -4px rgba(0, 0, 0, 0.6);
+  --shadow-panel: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --shadow-overlay: 0 24px 64px -20px rgba(0, 0, 0, 0.85);
+
+  /* ---- Easing --------------------------------------------------------- */
+  --ease-smooth: cubic-bezier(0.2, 0, 0, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ---- Breakpoints ---------------------------------------------------- */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* ---- Animations ----------------------------------------------------- */
+  --animate-fade-in: fade-in var(--duration-fast) var(--ease-smooth);
+  --animate-fade-out: fade-out var(--duration-fast) var(--ease-exit);
+  --animate-scale-in: scale-in var(--duration-base) var(--ease-entrance);
+  --animate-scale-out: scale-out var(--duration-fast) var(--ease-exit);
+  --animate-slide-in-right: slide-in-right var(--duration-base)
+    var(--ease-entrance);
+  --animate-slide-out-right: slide-out-right var(--duration-fast)
+    var(--ease-exit);
+  --animate-slide-in-left: slide-in-left var(--duration-base)
+    var(--ease-entrance);
+  --animate-slide-out-left: slide-out-left var(--duration-fast) var(--ease-exit);
+  --animate-slide-in-bottom: slide-in-bottom var(--duration-base)
+    var(--ease-entrance);
+  --animate-slide-out-bottom: slide-out-bottom var(--duration-fast)
+    var(--ease-exit);
+  --animate-shimmer: shimmer 1.8s linear infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes scale-out {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-out-bottom {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-ai: var(--color-ai);
-  --color-ml: var(--color-ml);
-  --color-dl: var(--color-dl);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Tokens outside Tailwind's theme namespaces. Utilities for these are
+   declared below so components never hand-write a raw var(). */
+:root {
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 360ms;
+  --duration-deliberate: 600ms;
+
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Layering contract. Radix renders overlays in a portal at the end of
+     <body>, so these values — not DOM order — decide what covers what. */
+  --z-canvas-overlay: 10;
+  --z-sticky: 20;
+  --z-floating-panel: 30;
+  --z-drawer: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+}
+
+/* The single focus treatment for the whole app. Every interactive component
+   applies this rather than inventing its own ring. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+@utility duration-instant {
+  transition-duration: var(--duration-instant);
+}
+@utility duration-fast {
+  transition-duration: var(--duration-fast);
+}
+@utility duration-base {
+  transition-duration: var(--duration-base);
+}
+@utility duration-slow {
+  transition-duration: var(--duration-slow);
+}
+
+@utility z-canvas-overlay {
+  z-index: var(--z-canvas-overlay);
+}
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+@utility z-floating-panel {
+  z-index: var(--z-floating-panel);
+}
+@utility z-drawer {
+  z-index: var(--z-drawer);
+}
+@utility z-modal {
+  z-index: var(--z-modal);
+}
+@utility z-popover {
+  z-index: var(--z-popover);
+}
+@utility z-tooltip {
+  z-index: var(--z-tooltip);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-ai) 40%, transparent);
+  color: var(--color-foreground);
+}
+
+/* Motion is meaningful here, never decorative — so removing it costs nothing
+   but the transition itself. Applies app-wide so no component can opt out. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
