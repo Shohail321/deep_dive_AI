@@ -1,6 +1,11 @@
+import { Container } from "@/components/layout";
+
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+    <Container
+      as="main"
+      className="flex flex-1 flex-col items-center justify-center gap-4 text-center"
+    >
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
         Deep Dive AI
       </h1>
@@ -8,6 +13,6 @@ export default function Home() {
         An interactive visual learning platform for Artificial Intelligence,
         Machine Learning, and Deep Learning.
       </p>
-    </main>
+    </Container>
   );
 }

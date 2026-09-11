@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { siteConfig } from "@/config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deep Dive AI",
-  description:
-    "An interactive visual learning platform for Artificial Intelligence, Machine Learning, and Deep Learning.",
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
