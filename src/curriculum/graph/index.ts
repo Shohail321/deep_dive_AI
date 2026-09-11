@@ -9,6 +9,8 @@ export {
   findCycle,
   findUnreachable,
   findOrphans,
+  getDomainRoots,
+  getConceptsInDomain,
 } from "./graph";
 export type { ConceptGraph } from "./graph";
 

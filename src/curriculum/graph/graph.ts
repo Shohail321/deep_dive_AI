@@ -1,4 +1,4 @@
-import type { Concept, ConceptId, RelationKey } from "../metadata";
+import type { Concept, ConceptId, Domain, RelationKey } from "../metadata";
 
 export function indexById(concepts: Concept[]): Map<ConceptId, Concept> {
   return new Map(concepts.map((concept) => [concept.id, concept]));
@@ -160,6 +160,40 @@ export function findUnreachable(graph: ConceptGraph): ConceptId[] {
   return graph.concepts
     .map((concept) => concept.id)
     .filter((id) => !seen.has(id));
+}
+
+/**
+ * The concept that introduces each domain: the one whose parents all sit
+ * outside it. Derived rather than listed, so naming the entry point of a
+ * domain is never a second place to keep in sync — which is what the
+ * homepage's rings render.
+ *
+ * A domain with several such concepts keeps the first in curriculum order;
+ * that ambiguity is a curriculum problem, not something to resolve here.
+ */
+export function getDomainRoots(graph: ConceptGraph): Map<Domain, Concept> {
+  const roots = new Map<Domain, Concept>();
+
+  for (const concept of graph.concepts) {
+    if (roots.has(concept.domain)) continue;
+
+    const hasParentInSameDomain = concept.relationships.parents.some(
+      (parentId) => graph.byId.get(parentId)?.domain === concept.domain,
+    );
+
+    if (!hasParentInSameDomain) {
+      roots.set(concept.domain, concept);
+    }
+  }
+
+  return roots;
+}
+
+export function getConceptsInDomain(
+  graph: ConceptGraph,
+  domain: Domain,
+): Concept[] {
+  return graph.concepts.filter((concept) => concept.domain === domain);
 }
 
 /** A concept with no edges at all: nothing links to it and it links to nothing. */
