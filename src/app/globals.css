@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for Deep Dive AI.
+ * Dark-only by design direction: background/foreground are not theme-switched.
+ * Track colors (ai/ml/dl) are the recurring visual identity for the
+ * AI -> ML -> DL curriculum hierarchy across the whole app.
+ */
+:root {
+  --background: #050507;
+  --foreground: #f5f5f7;
+
+  --color-ai: #8b5cf6;
+  --color-ml: #3b82f6;
+  --color-dl: #22d3ee;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ai: var(--color-ai);
+  --color-ml: var(--color-ml);
+  --color-dl: var(--color-dl);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
