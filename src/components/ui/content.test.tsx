@@ -12,7 +12,7 @@ import { ProgressIndicator } from "./ProgressIndicator";
 describe("ConceptLabel", () => {
   it("announces the track and mastery, so colour is never the only signal", () => {
     render(
-      <ConceptLabel track="ml" mastery="familiar">
+      <ConceptLabel domain="ml" mastery="familiar">
         Linear regression
       </ConceptLabel>,
     );
@@ -91,7 +91,7 @@ describe("content components", () => {
     const { container } = render(
       <main>
         <Badge tone="ai">AI</Badge>
-        <ConceptLabel track="dl" mastery="mastered">
+        <ConceptLabel domain="dl" mastery="mastered">
           Backpropagation
         </ConceptLabel>
         <ProgressIndicator value={45} label="Machine learning" />

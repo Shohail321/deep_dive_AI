@@ -1,15 +1,15 @@
 import Link from "next/link";
-import type { Track } from "@/curriculum/metadata";
+import type { Domain } from "@/curriculum/metadata";
 import type { MasteryLevel } from "@/progress";
 import { cn } from "@/lib";
 
-const trackStyles: Record<Track, string> = {
+const domainStyles: Record<Domain, string> = {
   ai: "border-ai/30 bg-ai/10 text-ai-text",
   ml: "border-ml/30 bg-ml/10 text-ml-text",
   dl: "border-dl/30 bg-dl/10 text-dl-text",
 };
 
-const trackNames: Record<Track, string> = {
+const domainNames: Record<Domain, string> = {
   ai: "Artificial Intelligence",
   ml: "Machine Learning",
   dl: "Deep Learning",
@@ -24,7 +24,7 @@ const masteryStyles: Record<MasteryLevel, string> = {
 
 export interface ConceptLabelProps {
   children: string;
-  track: Track;
+  domain: Domain;
   /** Renders a mastery dot. Colour alone never carries the meaning — the level is also announced. */
   mastery?: MasteryLevel;
   href?: string;
@@ -32,13 +32,13 @@ export interface ConceptLabelProps {
 }
 
 /**
- * A concept rendered in its track's colour. Type-only imports of `Track` and
- * `MasteryLevel` keep this in step with the curriculum and progress domains
- * rather than restating their vocabularies.
+ * A concept rendered in its domain's colour. Type-only imports of `Domain`
+ * and `MasteryLevel` keep this in step with the curriculum and progress
+ * domains rather than restating their vocabularies.
  */
 export function ConceptLabel({
   children,
-  track,
+  domain,
   mastery,
   href,
   className,
@@ -53,14 +53,14 @@ export function ConceptLabel({
       )}
       {children}
       <span className="sr-only">
-        {` (${trackNames[track]}${mastery ? `, ${mastery}` : ""})`}
+        {` (${domainNames[domain]}${mastery ? `, ${mastery}` : ""})`}
       </span>
     </>
   );
 
   const styles = cn(
     "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium",
-    trackStyles[track],
+    domainStyles[domain],
     className,
   );
 

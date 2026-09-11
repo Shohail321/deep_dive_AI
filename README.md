@@ -22,8 +22,11 @@ currently establishes the foundation they'll be built on.
 ## Architectural philosophy
 
 - **The curriculum is data, not pages.** Concepts, prerequisites, and status
-  live in `src/curriculum/metadata` as a validated (Zod) schema. Adding a
-  concept never means hand-wiring a new route.
+  live in `src/curriculum` as a validated (Zod) ontology. Adding a concept
+  never means hand-wiring a new route. Each relationship is authored in one
+  direction only and its inverse is derived, so the two can never disagree —
+  see [`src/curriculum/README.md`](src/curriculum/README.md) for how to add
+  concepts.
 - **Every domain gets its own seam.** Lesson content, curriculum metadata,
   quizzes, playgrounds, simulations, and progress tracking are separated so
   each can grow independently — see [Folder responsibilities](#folder-responsibilities).
@@ -83,27 +86,28 @@ Playwright is not yet wired into CI (see that file for why).
 
 Everything app-specific lives under `src/`.
 
-| Path                         | Responsibility                                                                  |
-| ---------------------------- | ------------------------------------------------------------------------------- |
-| `app/`                       | Next.js App Router routes only — thin pages that compose domain modules below.  |
-| `components/ui/`             | The design system: buttons, overlays, inputs, status and explanation surfaces.  |
-| `components/layout/`         | Structural layout primitives (e.g. `Container`).                                |
-| `content/`                   | Authored MDX lesson content. Empty until real lessons exist.                    |
-| `curriculum/metadata/`       | The concept schema (Zod) — id, track, prerequisites, status, etc.               |
-| `curriculum/graph/`          | Pure functions over curriculum data: traversal, cycle detection, auditing.      |
-| `lessons/`                   | The lesson-engine's contracts (stage pipeline types). No renderer yet.          |
-| `visualizations/primitives/` | Low-level visualization building blocks. Empty until D3/React Flow are adopted. |
-| `visualizations/components/` | Concrete visualizations (knowledge graph, network diagrams). Empty for now.     |
-| `simulations/`               | Pure simulation logic contracts. No math implementations yet.                   |
-| `quizzes/`                   | Quiz data contracts. No quiz UI yet.                                            |
-| `playgrounds/`               | Interactive playground contracts. No playground UI yet.                         |
-| `progress/`                  | Progress-tracking contracts, storage-agnostic (Supabase lands later).           |
-| `hooks/`                     | Shared React hooks (e.g. `useReducedMotion`).                                   |
-| `lib/`                       | Framework-agnostic utilities (e.g. `cn`).                                       |
-| `types/`                     | Cross-cutting types shared across domains. Empty until something needs it.      |
-| `config/`                    | App-wide configuration (site name, description, URL).                           |
-| `test/`                      | Shared test setup (Vitest) and the axe accessibility helper.                    |
-| `proxy.ts`                   | Request-time gate for development-only routes.                                  |
+| Path                         | Responsibility                                                                                 |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `app/`                       | Next.js App Router routes only — thin pages that compose domain modules below.                 |
+| `components/ui/`             | The design system: buttons, overlays, inputs, status and explanation surfaces.                 |
+| `components/layout/`         | Structural layout primitives (e.g. `Container`).                                               |
+| `content/`                   | Authored MDX lesson content. Empty until real lessons exist.                                   |
+| `curriculum/metadata/`       | The concept ontology as Zod schemas — identity, relationships, importance, content, editorial. |
+| `curriculum/graph/`          | Graph construction, derived inverse edges, and the two-layer validation.                       |
+| `curriculum/data/`           | The concepts themselves, one file each. Currently seven fixtures, not a curriculum.            |
+| `lessons/`                   | The lesson-engine's contracts (stage pipeline types). No renderer yet.                         |
+| `visualizations/primitives/` | Low-level visualization building blocks. Empty until D3/React Flow are adopted.                |
+| `visualizations/components/` | Concrete visualizations (knowledge graph, network diagrams). Empty for now.                    |
+| `simulations/`               | Pure simulation logic contracts. No math implementations yet.                                  |
+| `quizzes/`                   | Quiz data contracts. No quiz UI yet.                                                           |
+| `playgrounds/`               | Interactive playground contracts. No playground UI yet.                                        |
+| `progress/`                  | Progress-tracking contracts, storage-agnostic (Supabase lands later).                          |
+| `hooks/`                     | Shared React hooks (e.g. `useReducedMotion`).                                                  |
+| `lib/`                       | Framework-agnostic utilities (e.g. `cn`).                                                      |
+| `types/`                     | Cross-cutting types shared across domains. Empty until something needs it.                     |
+| `config/`                    | App-wide configuration (site name, description, URL).                                          |
+| `test/`                      | Shared test setup (Vitest) and the axe accessibility helper.                                   |
+| `proxy.ts`                   | Request-time gate for development-only routes.                                                 |
 
 ## Design system
 

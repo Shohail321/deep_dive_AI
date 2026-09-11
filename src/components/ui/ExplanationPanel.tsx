@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import type { Track } from "@/curriculum/metadata";
+import type { Domain } from "@/curriculum/metadata";
 import { cn } from "@/lib";
 
-const trackAccent: Record<Track, string> = {
+const domainAccent: Record<Domain, string> = {
   ai: "before:bg-ai",
   ml: "before:bg-ml",
   dl: "before:bg-dl",
@@ -11,8 +11,8 @@ const trackAccent: Record<Track, string> = {
 export interface ExplanationPanelProps {
   title: string;
   children: ReactNode;
-  /** Tints the edge rule to match the concept's track. */
-  track?: Track;
+  /** Tints the edge rule to match the concept's domain. */
+  domain?: Domain;
   eyebrow?: string;
   footer?: ReactNode;
   className?: string;
@@ -26,7 +26,7 @@ export interface ExplanationPanelProps {
 export function ExplanationPanel({
   title,
   children,
-  track,
+  domain,
   eyebrow,
   footer,
   className,
@@ -37,7 +37,7 @@ export function ExplanationPanel({
       className={cn(
         "relative pl-5",
         "before:absolute before:inset-y-0 before:left-0 before:w-px before:rounded-full",
-        track ? trackAccent[track] : "before:bg-border-strong",
+        domain ? domainAccent[domain] : "before:bg-border-strong",
         className,
       )}
     >

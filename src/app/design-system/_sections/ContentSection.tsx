@@ -37,16 +37,16 @@ export function ContentSection() {
 
         <DsExample
           title="ConceptLabel"
-          note="Takes the Track and MasteryLevel unions straight from the curriculum and progress domains rather than restating them."
+          note="Takes the Domain and MasteryLevel unions straight from the curriculum and progress domains rather than restating them."
         >
-          <ConceptLabel track="ai">Search</ConceptLabel>
-          <ConceptLabel track="ml" mastery="familiar">
+          <ConceptLabel domain="ai">Search</ConceptLabel>
+          <ConceptLabel domain="ml" mastery="familiar">
             Linear regression
           </ConceptLabel>
-          <ConceptLabel track="dl" mastery="mastered">
+          <ConceptLabel domain="dl" mastery="mastered">
             Backpropagation
           </ConceptLabel>
-          <ConceptLabel track="ml" mastery="unexplored" href="/design-system">
+          <ConceptLabel domain="ml" mastery="unexplored" href="/design-system">
             Decision trees
           </ConceptLabel>
         </DsExample>
@@ -93,7 +93,7 @@ export function ContentSection() {
           <ExplanationPanel
             title="Why the line moves"
             eyebrow="Intuition"
-            track="ml"
+            domain="ml"
             className="max-w-2xl"
           >
             <p>
