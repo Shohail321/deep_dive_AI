@@ -22,6 +22,7 @@ const domains: DomainSummary[] = [
     summary: "The broad pursuit of building systems that act intelligently.",
     learningObjectives: ["Place machine learning inside the wider field"],
     status: "drafting",
+    conceptCount: 1,
     concepts: [
       {
         id: "artificial-intelligence",
@@ -37,6 +38,7 @@ const domains: DomainSummary[] = [
     summary: "Systems that improve at a task by finding patterns in data.",
     learningObjectives: ["Distinguish supervised from unsupervised learning"],
     status: "drafting",
+    conceptCount: 9,
     concepts: [
       { id: "machine-learning", title: "Machine Learning", status: "drafting" },
       {
@@ -163,6 +165,21 @@ describe("DomainExplorer", () => {
     render(<DomainExplorer domains={domains} />);
 
     expect(screen.getByText("Linear Regression")).toBeInTheDocument();
+  });
+
+  it("says how many concepts were not shown", () => {
+    search.current = "domain=ml";
+    render(<DomainExplorer domains={domains} />);
+
+    // A domain with a hundred concepts must not render a hundred chips.
+    expect(screen.getByText(/and 7 more/)).toBeInTheDocument();
+  });
+
+  it("says nothing about extras when the field is fully listed", () => {
+    search.current = "domain=ai";
+    render(<DomainExplorer domains={domains} />);
+
+    expect(screen.queryByText(/more$/)).not.toBeInTheDocument();
   });
 
   it("has no axe violations in either state", async () => {

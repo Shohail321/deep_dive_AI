@@ -37,16 +37,32 @@ const RING_GEOMETRY = [
   { size: "40%", labelTop: "50%" },
 ] as const;
 
+/** Only spine domains are drawn as rings; the rest are here to satisfy the map. */
+const neutralRing =
+  "border-border bg-surface-raised/40 hover:border-border-strong";
+
 const ringStyles: Record<Domain, string> = {
   ai: "border-ai/25 bg-ai/[0.04] hover:border-ai/50 hover:bg-ai/[0.07]",
   ml: "border-ml/25 bg-ml/[0.05] hover:border-ml/50 hover:bg-ml/[0.09]",
   dl: "border-dl/30 bg-dl/[0.07] hover:border-dl/55 hover:bg-dl/[0.12]",
+  math: neutralRing,
+  data: neutralRing,
+  genai: neutralRing,
+  responsible: neutralRing,
+  mlops: neutralRing,
+  research: neutralRing,
 };
 
 const labelStyles: Record<Domain, string> = {
   ai: "text-ai-text",
   ml: "text-ml-text",
   dl: "text-dl-text",
+  math: "text-foreground-secondary",
+  data: "text-foreground-secondary",
+  genai: "text-foreground-secondary",
+  responsible: "text-foreground-secondary",
+  mlops: "text-foreground-secondary",
+  research: "text-foreground-secondary",
 };
 
 export function DomainRings({

@@ -4,54 +4,111 @@ import {
   buildConceptGraph,
   formatIssue,
   hasErrors,
+  summarizeCurriculum,
 } from "../graph";
-import { curriculumSchema } from "../metadata";
-import { artificialIntelligence, concepts, neuralNetwork } from ".";
+import { curriculumSchema, domainSchema, SPINE_DOMAINS } from "../metadata";
+import { concepts } from ".";
 
-describe("concept fixtures", () => {
-  it("all satisfy the concept schema", () => {
-    const result = curriculumSchema.safeParse(concepts);
-    expect(result.success).toBe(true);
+describe("curriculum registry", () => {
+  it("every record satisfies the concept schema", () => {
+    expect(curriculumSchema.safeParse(concepts).success).toBe(true);
   });
 
-  it("pass the curriculum audit with no errors", () => {
-    const issues = auditCurriculum(concepts);
-    const errors = issues.filter((issue) => issue.severity === "error");
-
-    // Formatted rather than compared as raw objects, so a failure names the
-    // broken edge instead of dumping every field of both concepts.
-    expect(errors.map(formatIssue)).toEqual([]);
-    expect(hasErrors(issues)).toBe(false);
-  });
-
-  it("currently raise no warnings either", () => {
-    // Warnings are the normal state of a curriculum mid-write, so this is a
-    // claim about these fixtures being exemplary, not an invariant for the
-    // curriculum at large. Relax it rather than contorting real concepts.
-    const warnings = auditCurriculum(concepts).filter(
-      (issue) => issue.severity === "warning",
+  it("has no structural errors", () => {
+    const errors = auditCurriculum(concepts).filter(
+      (issue) => issue.severity === "error",
     );
 
-    expect(warnings.map(formatIssue)).toEqual([]);
+    // Formatted so a failure names the broken edge instead of dumping records.
+    expect(errors.map(formatIssue)).toEqual([]);
+    expect(hasErrors(auditCurriculum(concepts))).toBe(false);
   });
 
-  it("form a single tree rooted at artificial intelligence", () => {
-    const graph = buildConceptGraph(concepts);
-    expect(graph.roots).toEqual(["artificial-intelligence"]);
+  it("uses ids that are unique, kebab-case and stable", () => {
+    const ids = concepts.map((concept) => concept.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.every((id) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))).toBe(true);
   });
 
-  it("derive the inverse edges the fixtures never declare", () => {
+  it("gives every concept a domain and a category", () => {
+    for (const concept of concepts) {
+      expect(domainSchema.options).toContain(concept.domain);
+      expect(concept.category.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("covers every declared domain", () => {
+    const covered = new Set(concepts.map((concept) => concept.domain));
+    for (const domain of domainSchema.options) {
+      expect(covered.has(domain)).toBe(true);
+    }
+  });
+
+  it("roots each spine domain in a concept with no parent inside it", () => {
     const graph = buildConceptGraph(concepts);
 
-    expect(graph.children.get(artificialIntelligence.id)).toEqual([
+    for (const domain of SPINE_DOMAINS) {
+      const inDomain = concepts.filter((concept) => concept.domain === domain);
+      const roots = inDomain.filter(
+        (concept) =>
+          !concept.relationships.parents.some(
+            (parentId) => graph.byId.get(parentId)?.domain === domain,
+          ),
+      );
+
+      expect(roots.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("separates beginner material from advanced material", () => {
+    const summary = summarizeCurriculum(concepts);
+
+    // Both ends of the range must be populated, or difficulty is not being
+    // used to sequence anything.
+    expect(summary.byDifficulty.intro ?? 0).toBeGreaterThan(0);
+    expect(summary.byDifficulty.beginner ?? 0).toBeGreaterThan(0);
+    expect(summary.byDifficulty.advanced ?? 0).toBeGreaterThan(0);
+  });
+
+  it("does not carry two concepts with the same title", () => {
+    const titles = concepts.map((concept) => concept.title.toLowerCase());
+    const duplicates = titles.filter(
+      (title, index) => titles.indexOf(title) !== index,
+    );
+
+    expect(duplicates).toEqual([]);
+  });
+
+  it("never lists an alias that is also another concept's title", () => {
+    const titles = new Set(
+      concepts.map((concept) => concept.title.toLowerCase()),
+    );
+
+    // An alias colliding with a real title means the same idea is recorded
+    // twice under slightly different names — exactly what aliases exist to
+    // prevent.
+    const collisions = concepts.flatMap((concept) =>
+      concept.aliases
+        .filter((alias) => titles.has(alias.toLowerCase()))
+        .map((alias) => `${concept.id} aliases "${alias}"`),
+    );
+
+    expect(collisions).toEqual([]);
+  });
+
+  it("keeps the concepts the rest of the app depends on", () => {
+    const ids = new Set<string>(concepts.map((concept) => concept.id));
+
+    for (const id of [
+      "artificial-intelligence",
       "machine-learning",
-    ]);
-    expect(graph.followUps.get(neuralNetwork.id)).toEqual(["transformer"]);
-  });
-
-  it("exercise every authoring status the schema allows", () => {
-    const statuses = new Set(concepts.map((concept) => concept.status));
-    expect(statuses.has("planned")).toBe(true);
-    expect(statuses.has("drafting")).toBe(true);
+      "deep-learning",
+      "neural-network",
+      "linear-regression",
+      "gradient-descent",
+      "transformer",
+    ]) {
+      expect(ids.has(id)).toBe(true);
+    }
   });
 });

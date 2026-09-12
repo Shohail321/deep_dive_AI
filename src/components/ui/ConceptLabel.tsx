@@ -1,18 +1,26 @@
 import Link from "next/link";
-import type { Domain } from "@/curriculum/metadata";
+import { DOMAIN_META, type Domain } from "@/curriculum/metadata";
 import type { MasteryLevel } from "@/progress";
 import { cn } from "@/lib";
+
+/**
+ * Only the three spine domains carry an identity colour. The neighbouring
+ * tracks are deliberately neutral: nine competing hues would turn every
+ * concept list into a rainbow and drain the AI/ML/DL colours of meaning.
+ */
+const neutralDomain =
+  "border-border bg-surface-raised text-foreground-secondary";
 
 const domainStyles: Record<Domain, string> = {
   ai: "border-ai/30 bg-ai/10 text-ai-text",
   ml: "border-ml/30 bg-ml/10 text-ml-text",
   dl: "border-dl/30 bg-dl/10 text-dl-text",
-};
-
-const domainNames: Record<Domain, string> = {
-  ai: "Artificial Intelligence",
-  ml: "Machine Learning",
-  dl: "Deep Learning",
+  math: neutralDomain,
+  data: neutralDomain,
+  genai: neutralDomain,
+  responsible: neutralDomain,
+  mlops: neutralDomain,
+  research: neutralDomain,
 };
 
 const masteryStyles: Record<MasteryLevel, string> = {
@@ -53,7 +61,7 @@ export function ConceptLabel({
       )}
       {children}
       <span className="sr-only">
-        {` (${domainNames[domain]}${mastery ? `, ${mastery}` : ""})`}
+        {` (${DOMAIN_META[domain].label}${mastery ? `, ${mastery}` : ""})`}
       </span>
     </>
   );

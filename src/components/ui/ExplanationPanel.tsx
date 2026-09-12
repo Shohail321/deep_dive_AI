@@ -6,6 +6,13 @@ const domainAccent: Record<Domain, string> = {
   ai: "before:bg-ai",
   ml: "before:bg-ml",
   dl: "before:bg-dl",
+  // Neighbouring tracks keep the default rule rather than inventing a hue.
+  math: "before:bg-border-strong",
+  data: "before:bg-border-strong",
+  genai: "before:bg-border-strong",
+  responsible: "before:bg-border-strong",
+  mlops: "before:bg-border-strong",
+  research: "before:bg-border-strong",
 };
 
 export interface ExplanationPanelProps {

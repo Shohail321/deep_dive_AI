@@ -1,41 +1,77 @@
 import type { Concept } from "../metadata";
-import { artificialIntelligence } from "./concepts/artificial-intelligence";
-import { deepLearning } from "./concepts/deep-learning";
-import { gradientDescent } from "./concepts/gradient-descent";
-import { linearRegression } from "./concepts/linear-regression";
-import { machineLearning } from "./concepts/machine-learning";
-import { neuralNetwork } from "./concepts/neural-network";
-import { transformer } from "./concepts/transformer";
+import { advancedConcepts } from "./areas/advanced";
+import { aiConcepts } from "./areas/ai-classical";
+import { applicationConcepts } from "./areas/applications";
+import { architectureConcepts } from "./areas/dl-architectures";
+import { dlCoreConcepts } from "./areas/dl-core";
+import { representationConcepts } from "./areas/dl-representation";
+import { dataFoundationConcepts } from "./areas/foundations-data";
+import { mathConcepts } from "./areas/foundations-math";
+import { genaiConcepts } from "./areas/genai";
+import { evaluationConcepts } from "./areas/ml-evaluation";
+import { generalisationConcepts } from "./areas/ml-generalisation";
+import { mlCoreConcepts } from "./areas/ml-core";
+import { optimisationConcepts } from "./areas/ml-optimisation";
+import { supervisedConcepts } from "./areas/ml-supervised";
+import { unsupervisedConcepts } from "./areas/ml-unsupervised";
+import { mlopsConcepts } from "./areas/mlops";
+import { researchConcepts } from "./areas/research-practice";
+import { responsibleConcepts } from "./areas/responsible";
 
 /**
- * Seven representative concepts, not a curriculum.
+ * The curriculum registry.
  *
- * They exist to exercise the ontology — every field, both relationship
- * directions, all four authoring statuses — and to give the validation
- * utilities something real to run against. The actual curriculum is
- * hundreds of concepts that do not exist yet. Nothing should read this list
- * and conclude that a topic is missing from the platform's scope.
+ * This is a map of the field, not a claim to have covered it. It aims at the
+ * concepts a serious learner meets across foundations, classical AI, machine
+ * learning, deep learning, generative AI, responsible AI, production and
+ * research practice — and it will always be missing things.
  *
- * The barrel is maintained by hand. That is fine at this size and stays
- * honest about what exists; generating it becomes worthwhile well before
- * this list reaches a hundred entries.
+ * That is the point of the audit in `../graph`: gaps show up as dangling
+ * references and unreachable concepts rather than as silence. When a topic is
+ * missing, add it to the area file it belongs to (see ../README.md); the
+ * audit and the summary report will tell you whether it landed cleanly.
+ *
+ * Concepts are grouped into area files rather than one file each. At this
+ * size, per-concept files would mean several hundred imports to maintain by
+ * hand for no benefit.
  */
 export const concepts: Concept[] = [
-  artificialIntelligence,
-  machineLearning,
-  deepLearning,
-  linearRegression,
-  gradientDescent,
-  neuralNetwork,
-  transformer,
+  ...mathConcepts,
+  ...dataFoundationConcepts,
+  ...aiConcepts,
+  ...mlCoreConcepts,
+  ...supervisedConcepts,
+  ...unsupervisedConcepts,
+  ...evaluationConcepts,
+  ...generalisationConcepts,
+  ...optimisationConcepts,
+  ...dlCoreConcepts,
+  ...architectureConcepts,
+  ...representationConcepts,
+  ...applicationConcepts,
+  ...genaiConcepts,
+  ...responsibleConcepts,
+  ...advancedConcepts,
+  ...mlopsConcepts,
+  ...researchConcepts,
 ];
 
 export {
-  artificialIntelligence,
-  machineLearning,
-  deepLearning,
-  linearRegression,
-  gradientDescent,
-  neuralNetwork,
-  transformer,
+  mathConcepts,
+  dataFoundationConcepts,
+  aiConcepts,
+  mlCoreConcepts,
+  supervisedConcepts,
+  unsupervisedConcepts,
+  evaluationConcepts,
+  generalisationConcepts,
+  optimisationConcepts,
+  dlCoreConcepts,
+  architectureConcepts,
+  representationConcepts,
+  applicationConcepts,
+  genaiConcepts,
+  advancedConcepts,
+  mlopsConcepts,
+  researchConcepts,
 };

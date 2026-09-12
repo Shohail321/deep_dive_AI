@@ -6,7 +6,7 @@ import {
   getConceptsInDomain,
   getDomainRoots,
 } from "@/curriculum/graph";
-import { domainSchema } from "@/curriculum/metadata";
+import { SPINE_DOMAINS } from "@/curriculum/metadata";
 import {
   DomainExplorer,
   type DomainSummary,
@@ -14,17 +14,22 @@ import {
 
 /**
  * The rings are the curriculum's own shape, read from the graph rather than
- * listed here: each domain's entry concept supplies the title and summary,
- * and the order follows the containment chain. Adding a domain to
- * `domainSchema` puts a ring on the homepage.
+ * listed here: each domain's entry concept supplies the title and summary.
+ *
+ * Only the spine domains become rings. The curriculum also covers maths,
+ * data, generative AI, responsible AI, production and research practice —
+ * none of which is a subset of "artificial intelligence", so none of which
+ * belongs inside the concentric diagram.
  */
 function getDomainSummaries(): DomainSummary[] {
   const graph = buildConceptGraph(concepts);
   const roots = getDomainRoots(graph);
 
-  return domainSchema.options.flatMap((domain) => {
+  return SPINE_DOMAINS.flatMap((domain) => {
     const root = roots.get(domain);
     if (!root) return [];
+
+    const inDomain = getConceptsInDomain(graph, domain);
 
     return [
       {
@@ -34,11 +39,24 @@ function getDomainSummaries(): DomainSummary[] {
         summary: root.summary,
         learningObjectives: root.learningObjectives,
         status: root.status,
-        concepts: getConceptsInDomain(graph, domain).map((concept) => ({
-          id: concept.id,
-          title: concept.title,
-          status: concept.status,
-        })),
+        conceptCount: inDomain.length,
+        // A few entry points, not the whole domain: a field with a hundred
+        // concepts would otherwise render as a wall of chips, and every one
+        // of them would be serialised to the client for nothing.
+        concepts: inDomain
+          .filter((concept) => concept.id !== root.id)
+          .sort(
+            (a, b) =>
+              b.importance.intuitive +
+              b.importance.practical -
+              (a.importance.intuitive + a.importance.practical),
+          )
+          .slice(0, 6)
+          .map((concept) => ({
+            id: concept.id,
+            title: concept.title,
+            status: concept.status,
+          })),
       },
     ];
   });

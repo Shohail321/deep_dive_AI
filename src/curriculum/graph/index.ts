@@ -17,5 +17,7 @@ export type { ConceptGraph } from "./graph";
 export { auditCurriculum, inspectCurriculum } from "./audit";
 export { parseCurriculum } from "./parse";
 export type { ParsedCurriculum } from "./parse";
+export { summarizeCurriculum, formatCurriculumSummary } from "./summary";
+export type { CurriculumSummary } from "./summary";
 export { hasErrors, formatIssue } from "./issues";
 export type { CurriculumIssue, IssueSeverity } from "./issues";

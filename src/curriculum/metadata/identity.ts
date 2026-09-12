@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { domainSchema } from "./domains";
 
 /** Lower-case kebab-case, so ids and slugs are URL-safe and stable to diff. */
 const kebabCase = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -20,14 +21,6 @@ export const slugSchema = z
   .regex(kebabCase, "Slugs must be kebab-case")
   .brand("Slug");
 export type Slug = z.infer<typeof slugSchema>;
-
-/**
- * The top-level branches of the curriculum. Extending this union (a GenAI or
- * practical "Use AI" track) is expected; every domain needs a colour token
- * and an entry in the design system's domain maps.
- */
-export const domainSchema = z.enum(["ai", "ml", "dl"]);
-export type Domain = z.infer<typeof domainSchema>;
 
 export const difficultySchema = z.enum([
   "intro",

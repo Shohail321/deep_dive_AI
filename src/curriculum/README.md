@@ -5,62 +5,70 @@ a node; prerequisites, parents and related links are edges. Ordering is a
 consequence of the graph, never something typed into a table of contents.
 
 ```
-metadata/   the ontology — what a concept is, as Zod schemas
-graph/      what you can ask of the graph, and what can be wrong with it
-data/       the concepts themselves, one file each
+metadata/     the ontology — what a concept is, as Zod schemas
+graph/        what you can ask of the graph, and what can be wrong with it
+data/areas/   the concepts themselves, grouped by area
 ```
 
-## The seven concepts in `data/` are not the curriculum
+## What the registry is, and is not
 
-They are fixtures: enough to exercise every field, both relationship
-directions and more than one authoring status, and to give the validation
-utilities something real to run against. The real curriculum is hundreds of
-concepts that do not exist yet. A topic missing from `data/` says nothing
-about whether it belongs in the platform.
+It is a map of the field: the concepts a serious learner meets across
+foundations, classical AI, machine learning, deep learning, generative AI,
+responsible AI, production and research practice. Run the test suite to see
+the current count and shape.
+
+It is **not** a claim to have covered the field, and it never will be. Whole
+areas are thin, and each concept is a one-line summary rather than a lesson.
+What the architecture guarantees is that gaps are _discoverable_: a missing
+prerequisite shows up as a dangling reference, a stranded topic shows up as
+an orphan, and the summary report shows where coverage is thinnest.
 
 ## Adding a concept
 
-1. Create `data/concepts/<slug>.ts` and export a `defineConcept({ … })`.
-   `defineConcept` validates at the definition site, so a mistake fails at
-   import rather than at some later render.
-2. Add it to the `concepts` array in `data/index.ts`.
-3. Run `npm run test` — `data/concepts.test.ts` re-audits the whole graph, so
-   a dangling reference or a cycle fails there, named rather than dumped.
+1. Open the area file it belongs to in `data/areas/` — or add a new one.
+2. Add a record to the relevant `defineArea({ … })` block.
+3. Run `npm run test`. The registry is re-audited on every run, so a dangling
+   reference, a cycle or a duplicate fails there, named rather than dumped.
+
+```ts
+const training = defineArea({
+  domain: "dl",
+  category: "Training neural networks",
+  parents: ["neural-network"],
+});
+
+export const dlCoreConcepts = training([
+  {
+    id: "backpropagation",
+    title: "Backpropagation",
+    summary: "How a network works out which weights to blame for its error.",
+    difficulty: "advanced",
+    minutes: 35,
+    // [intuitive, mathematical, coding, practical, research]
+    importance: [5, 5, 4, 4, 5],
+    prerequisites: ["chain-rule", "forward-propagation"],
+  },
+]);
+```
+
+`defineArea` fills in the domain, category and shared parent, and runs every
+record through `defineConcept` — so a mistake fails at import, not at render.
+Importance is a fixed 5-tuple; the schema still requires all five axes.
+
+Concepts are grouped by area rather than one file each. At several hundred
+records, per-concept files would mean maintaining an equally long list of
+imports by hand for no benefit.
 
 There is deliberately no separate audit CLI: it would need a TypeScript
 runner as a dependency to do what the test suite already does on every run.
 
-The smallest legal concept:
+## The summary report
 
-```ts
-import { defineConcept } from "../../metadata";
-
-export const backpropagation = defineConcept({
-  id: "backpropagation",
-  slug: "backpropagation",
-  title: "Backpropagation",
-  summary: "How a network works out which weights to blame for its error.",
-  domain: "dl",
-  category: "Training",
-  difficulty: "intermediate",
-  estimatedMinutes: 30,
-  importance: {
-    intuitive: 5,
-    mathematical: 5,
-    coding: 3,
-    practical: 3,
-    research: 4,
-  },
-  status: "planned",
-  relationships: {
-    parents: ["deep-learning"],
-    prerequisites: ["neural-network"],
-  },
-});
-```
-
-`relationships`, `content` and `editorial` may be omitted entirely; each field
-inside them defaults. `importance` may not — see below.
+`summarizeCurriculum(concepts)` returns counts by domain, difficulty and
+status, alongside orphan, invalid-reference, cycle and unreachable counts.
+`formatCurriculumSummary` renders it, and `graph/summary.test.ts` prints it
+on every test run — so the state of the curriculum is visible without a
+committed snapshot that would immediately go stale.
 
 ## Rules worth knowing before you author
 
@@ -115,16 +123,26 @@ Errors mean the graph is wrong. Warnings mean it is incomplete, which is the
 normal state of a curriculum being written — `hasErrors(issues)` is the check
 to gate on.
 
-## Adding a domain
+## Domains
 
-`domainSchema` in `metadata/identity.ts` is the one place the domains are
-listed. A new one (a GenAI track, a practical "Use AI" track) needs:
+`metadata/domains.ts` is the one place domains are listed, along with a label
+and whether the domain is part of the **spine**.
 
-1. the entry in `domainSchema`,
-2. a colour token in `src/app/globals.css` (`--color-<domain>` plus a
-   `-text` variant that clears 4.5:1),
-3. entries in the domain maps in `ConceptLabel` and `ExplanationPanel` —
-   TypeScript will name both as errors until you do.
+The spine is `ai ⊃ ml ⊃ dl` — the containment chain the homepage draws as
+concentric rings. Everything else (maths, data, generative AI, responsible
+AI, MLOps, research practice) is a neighbouring body of knowledge, not a
+subset of AI, and so is deliberately not a ring.
+
+Adding a domain needs:
+
+1. the entry in `domainSchema` and `DOMAIN_META`,
+2. entries in the domain maps in `ConceptLabel`, `ExplanationPanel`,
+   `DomainRings` and `DomainExplorer` — TypeScript names every one of them
+   as an error until you do,
+3. a colour token in `src/app/globals.css` only if the domain earns an
+   identity hue. Only spine domains have one; the rest render neutral on
+   purpose, because nine competing colours would drain the AI/ML/DL palette
+   of its meaning.
 
 ## What does not live here
 

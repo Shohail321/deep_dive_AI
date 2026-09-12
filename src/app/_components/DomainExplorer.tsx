@@ -3,7 +3,7 @@
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
-import { Badge, Button, ConceptLabel } from "@/components/ui";
+import { Badge, Button, ConceptLabel, type BadgeTone } from "@/components/ui";
 import {
   domainSchema,
   type AuthoringStatus,
@@ -24,7 +24,9 @@ export interface DomainSummary {
   summary: string;
   learningObjectives: string[];
   status: AuthoringStatus;
+  /** A handful of entry points, not the whole domain — see `conceptCount`. */
   concepts: DomainConceptSummary[];
+  conceptCount: number;
 }
 
 const statusTone = {
@@ -45,6 +47,24 @@ const domainColor: Record<Domain, string> = {
   ai: "var(--color-ai)",
   ml: "var(--color-ml)",
   dl: "var(--color-dl)",
+  math: "var(--color-border-strong)",
+  data: "var(--color-border-strong)",
+  genai: "var(--color-border-strong)",
+  responsible: "var(--color-border-strong)",
+  mlops: "var(--color-border-strong)",
+  research: "var(--color-border-strong)",
+};
+
+const domainTone: Record<Domain, BadgeTone> = {
+  ai: "ai",
+  ml: "ml",
+  dl: "dl",
+  math: "neutral",
+  data: "neutral",
+  genai: "neutral",
+  responsible: "neutral",
+  mlops: "neutral",
+  research: "neutral",
 };
 
 /**
@@ -189,7 +209,9 @@ export function DomainExplorer({ domains }: { domains: DomainSummary[] }) {
 
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2">
-                  <Badge tone={selected.domain}>{selected.shortTitle}</Badge>
+                  <Badge tone={domainTone[selected.domain]}>
+                    {selected.shortTitle}
+                  </Badge>
                   <h2
                     ref={focusPanelHeading}
                     tabIndex={-1}
@@ -227,7 +249,7 @@ export function DomainExplorer({ domains }: { domains: DomainSummary[] }) {
 
               <div className="mt-8">
                 <h3 className="text-foreground-muted text-2xs font-medium tracking-wide uppercase">
-                  Concepts in this field
+                  Where this field starts
                 </h3>
                 <ul className="mt-3 flex flex-wrap items-center gap-2">
                   {selected.concepts.map((concept) => (
@@ -237,6 +259,12 @@ export function DomainExplorer({ domains }: { domains: DomainSummary[] }) {
                       </ConceptLabel>
                     </li>
                   ))}
+                  {selected.conceptCount > selected.concepts.length && (
+                    <li className="text-foreground-muted text-sm">
+                      and {selected.conceptCount - selected.concepts.length}{" "}
+                      more
+                    </li>
+                  )}
                 </ul>
                 <p className="text-foreground-muted mt-4 text-xs">
                   <Badge tone={statusTone[selected.status]}>

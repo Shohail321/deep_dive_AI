@@ -1,17 +1,13 @@
 export {
   conceptIdSchema,
   slugSchema,
-  domainSchema,
   difficultySchema,
   conceptIdentitySchema,
 } from "./identity";
-export type {
-  ConceptId,
-  Slug,
-  Domain,
-  Difficulty,
-  ConceptIdentity,
-} from "./identity";
+export type { ConceptId, Slug, Difficulty, ConceptIdentity } from "./identity";
+
+export { domainSchema, DOMAIN_META, SPINE_DOMAINS } from "./domains";
+export type { Domain, DomainMeta } from "./domains";
 
 export { conceptRelationshipsSchema, RELATION_KEYS } from "./relationships";
 export type { ConceptRelationships, RelationKey } from "./relationships";
