@@ -1,70 +1,40 @@
-import { Suspense } from "react";
+import { Compass, MousePointerClick, Network } from "lucide-react";
 import { Container } from "@/components/layout";
-import { concepts } from "@/curriculum/data";
-import {
-  buildConceptGraph,
-  getConceptsInDomain,
-  getDomainRoots,
-} from "@/curriculum/graph";
-import { SPINE_DOMAINS } from "@/curriculum/metadata";
-import {
-  DomainExplorer,
-  type DomainSummary,
-} from "./_components/DomainExplorer";
+import { SPINE_DOMAINS, type Domain } from "@/curriculum/metadata";
+import { Hero, type HeroDomain } from "./_components/Hero";
 
 /**
- * The rings are the curriculum's own shape, read from the graph rather than
- * listed here: each domain's entry concept supplies the title and summary.
- *
- * Only the spine domains become rings. The curriculum also covers maths,
- * data, generative AI, responsible AI, production and research practice —
- * none of which is a subset of "artificial intelligence", so none of which
- * belongs inside the concentric diagram.
+ * Fixed, short hero copy rather than curriculum data: this is marketing
+ * prose for three specific rings, not a lesson summary, and it needs to stay
+ * exactly this short regardless of how any concept's summary is worded
+ * elsewhere. The destination each ring links to is what actually reads from
+ * the curriculum. Ring order still comes from `SPINE_DOMAINS`, the one place
+ * the AI ⊃ ML ⊃ DL containment order is authored.
  */
-function getDomainSummaries(): DomainSummary[] {
-  const graph = buildConceptGraph(concepts);
-  const roots = getDomainRoots(graph);
+const HERO_DESCRIPTIONS: Record<Domain, string | undefined> = {
+  ai: "Machines performing tasks associated with intelligent behavior.",
+  ml: "Systems learning patterns from data.",
+  dl: "Machine learning using multi-layer neural networks.",
+  math: undefined,
+  data: undefined,
+  genai: undefined,
+  responsible: undefined,
+  mlops: undefined,
+  research: undefined,
+};
 
-  return SPINE_DOMAINS.flatMap((domain) => {
-    const root = roots.get(domain);
-    if (!root) return [];
+const heroDomains: HeroDomain[] = SPINE_DOMAINS.flatMap((domain) => {
+  const description = HERO_DESCRIPTIONS[domain];
+  return description ? [{ domain, description }] : [];
+});
 
-    const inDomain = getConceptsInDomain(graph, domain);
-
-    return [
-      {
-        domain,
-        title: root.title,
-        shortTitle: root.shortTitle ?? root.title,
-        summary: root.summary,
-        learningObjectives: root.learningObjectives,
-        status: root.status,
-        conceptCount: inDomain.length,
-        // A few entry points, not the whole domain: a field with a hundred
-        // concepts would otherwise render as a wall of chips, and every one
-        // of them would be serialised to the client for nothing.
-        concepts: inDomain
-          .filter((concept) => concept.id !== root.id)
-          .sort(
-            (a, b) =>
-              b.importance.intuitive +
-              b.importance.practical -
-              (a.importance.intuitive + a.importance.practical),
-          )
-          .slice(0, 6)
-          .map((concept) => ({
-            id: concept.id,
-            title: concept.title,
-            status: concept.status,
-          })),
-      },
-    ];
-  });
-}
+const belowHero: { icon: typeof Compass; label: string }[] = [
+  { icon: Compass, label: "Explore visually" },
+  { icon: MousePointerClick, label: "Interact with concepts" },
+  { icon: Network, label: "Build your knowledge map" },
+];
 
 export default function Home() {
-  const domains = getDomainSummaries();
-
   return (
     <Container as="main" className="flex flex-1 flex-col justify-center py-16">
       <header className="mx-auto max-w-2xl text-center">
@@ -78,19 +48,20 @@ export default function Home() {
       </header>
 
       <div className="mt-12 sm:mt-16">
-        <Suspense
-          fallback={
-            <div
-              className="min-h-[34rem] sm:min-h-[38rem]"
-              aria-busy
-              role="status"
-              aria-label="Loading the field diagram"
-            />
-          }
-        >
-          <DomainExplorer domains={domains} />
-        </Suspense>
+        <Hero domains={heroDomains} />
       </div>
+
+      <ul className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 sm:mt-20">
+        {belowHero.map(({ icon: Icon, label }) => (
+          <li
+            key={label}
+            className="text-foreground-muted flex items-center gap-2 text-sm"
+          >
+            <Icon aria-hidden className="size-4" />
+            {label}
+          </li>
+        ))}
+      </ul>
     </Container>
   );
 }
