@@ -20,5 +20,5 @@ export function proxy() {
 }
 
 export const config = {
-  matcher: "/design-system",
+  matcher: ["/design-system", "/admin/curriculum"],
 };

@@ -21,3 +21,19 @@ export { summarizeCurriculum, formatCurriculumSummary } from "./summary";
 export type { CurriculumSummary } from "./summary";
 export { hasErrors, formatIssue } from "./issues";
 export type { CurriculumIssue, IssueSeverity } from "./issues";
+
+export {
+  buildCoverageRows,
+  getDomainCoverage,
+  filterCoverageRows,
+  partitionByContent,
+  rowsWithoutPrerequisites,
+  getCategoriesByDomain,
+} from "./coverage";
+export type {
+  ConceptCoverageRow,
+  DomainCoverage,
+  CoverageFilter,
+  ContentFilterValue,
+  ContentKind,
+} from "./coverage";

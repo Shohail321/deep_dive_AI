@@ -59,8 +59,26 @@ Concepts are grouped by area rather than one file each. At several hundred
 records, per-concept files would mean maintaining an equally long list of
 imports by hand for no benefit.
 
-There is deliberately no separate audit CLI: it would need a TypeScript
-runner as a dependency to do what the test suite already does on every run.
+## Coverage reporting
+
+`graph/coverage.ts` joins each concept with what the graph knows about it —
+issues, orphan/unreachable status, has/lacks content flags — into one
+`ConceptCoverageRow` per concept, plus `getDomainCoverage` for per-domain
+percentages and `filterCoverageRows` for the multi-dimension filtering the
+admin view and any future report both need. These functions have no UI or
+CLI logic of their own; `coverage.test.ts` covers them directly.
+
+Two consumers build on that layer:
+
+- `npm run audit:curriculum` (`scripts/audit-curriculum.ts`, run via `tsx`)
+  prints the full summary and every issue, and exits non-zero only for
+  error-severity issues — duplicate ids, invalid references, cycles. It runs
+  in CI between `test` and `build` and never fails merely because lesson
+  content is still planned. Now that `tsx` is a dependency for other reasons,
+  the cost that used to keep this CLI out no longer applies.
+- `/admin/curriculum` (development only — gated by both `src/proxy.ts` and an
+  in-page `notFound()`) is the same data as an interactive, filterable table,
+  for browsing coverage rather than reading a terminal dump.
 
 ## The summary report
 

@@ -25,6 +25,8 @@ export { Modal } from "./Modal";
 export { Popover } from "./Popover";
 export { ProgressIndicator } from "./ProgressIndicator";
 export { SearchInput } from "./SearchInput";
+export { Select } from "./Select";
+export type { SelectOption, SelectProps } from "./Select";
 export { Skeleton } from "./Skeleton";
 export type { SkeletonShape } from "./Skeleton";
 export { Slider } from "./Slider";

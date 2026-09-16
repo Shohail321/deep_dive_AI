@@ -115,6 +115,18 @@ Visit **`/design-system`** with the dev server running. It is the living
 reference for every token and component, and it is blocked in production by
 `src/proxy.ts`.
 
+## Curriculum coverage auditor
+
+Visit **`/admin/curriculum`** with the dev server running to browse what the
+curriculum registry contains — coverage by domain, missing lesson/
+visualization/quiz/playground content, orphans, and structural issues — with
+search and filtering. It is blocked in production the same way as
+`/design-system`. The same reporting functions (`src/curriculum/graph/coverage.ts`)
+back `npm run audit:curriculum`, a CI-runnable check that fails only on
+structural errors (duplicate ids, invalid references, cycles), never on
+lesson content that is merely still planned. See `src/curriculum/README.md`
+for details.
+
 Tokens live in `src/app/globals.css` as Tailwind v4 `@theme` variables — the
 single source of truth for colour, typography, spacing, radii, shadows,
 motion, z-index layering, focus and the graph/learning/mastery state ramps.
