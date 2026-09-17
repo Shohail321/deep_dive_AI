@@ -10,8 +10,8 @@ import {
 } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore, type MouseEvent } from "react";
-import { useReducedMotion } from "@/hooks";
+import { useState, type MouseEvent } from "react";
+import { useMediaQuery, useReducedMotion } from "@/hooks";
 import type { Domain } from "@/curriculum/metadata";
 import { cn } from "@/lib";
 
@@ -82,30 +82,6 @@ const labelStyles: Record<Domain, string> = {
 const EXIT_SECONDS = 0.22;
 
 const HOVER_QUERY = "(hover: hover) and (pointer: fine)";
-
-function subscribeToHoverSupport(callback: () => void) {
-  const query = window.matchMedia(HOVER_QUERY);
-  query.addEventListener("change", callback);
-  return () => query.removeEventListener("change", callback);
-}
-
-function getHoverSupport() {
-  return window.matchMedia(HOVER_QUERY).matches;
-}
-
-/**
- * `useSyncExternalStore` rather than an effect that calls `setState`: the
- * parallax this gates on is unavailable during SSR (no `window`), and a
- * false-then-true render there is exactly what this hook exists to do
- * without a hydration mismatch or a cascading render.
- */
-function useSupportsHover() {
-  return useSyncExternalStore(
-    subscribeToHoverSupport,
-    getHoverSupport,
-    () => false,
-  );
-}
 
 interface RingLinkProps {
   ring: DomainRing;
@@ -216,7 +192,7 @@ function RingLink({
 export function DomainRings({ rings, className }: DomainRingsProps) {
   const [hovered, setHovered] = useState<Domain | null>(null);
   const [leaving, setLeaving] = useState<Domain | null>(null);
-  const supportsHover = useSupportsHover();
+  const supportsHover = useMediaQuery(HOVER_QUERY);
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
 

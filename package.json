@@ -16,6 +16,7 @@
     "audit:curriculum": "tsx scripts/audit-curriculum.ts"
   },
   "dependencies": {
+    "@xyflow/react": "^12.11.6",
     "clsx": "^2.1.1",
     "lucide-react": "^1.45.0",
     "motion": "^13.2.0",

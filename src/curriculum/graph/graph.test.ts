@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
+import type { ConceptId } from "../metadata";
 import {
   buildConceptGraph,
   findCycle,
   findOrphans,
   findUnreachable,
+  getAncestorPath,
   getChildren,
   getDependents,
+  getDomainEntryPoints,
   getFollowUps,
   getPrerequisites,
   getRelated,
@@ -166,5 +169,101 @@ describe("findOrphans", () => {
     const b = makeConcept({ id: "b" });
 
     expect(findOrphans(buildConceptGraph([a, b]))).toEqual([]);
+  });
+});
+
+describe("getDomainEntryPoints", () => {
+  it("finds every concept in a domain with no same-domain parent", () => {
+    const a = makeConcept({ id: "a", domain: "ml" });
+    const b = makeConcept({ id: "b", domain: "ml" });
+    const child = makeConcept({
+      id: "child",
+      domain: "ml",
+      relationships: { parents: ["a"] },
+    });
+
+    const graph = buildConceptGraph([a, b, child]);
+
+    expect(
+      getDomainEntryPoints(graph, "ml")
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(["a", "b"]);
+  });
+
+  it("treats a parent in a different domain as still an entry point", () => {
+    const aiRoot = makeConcept({ id: "ai-root", domain: "ai" });
+    const mlRoot = makeConcept({
+      id: "ml-root",
+      domain: "ml",
+      relationships: { parents: ["ai-root"] },
+    });
+
+    const graph = buildConceptGraph([aiRoot, mlRoot]);
+
+    expect(getDomainEntryPoints(graph, "ml").map((c) => c.id)).toEqual([
+      "ml-root",
+    ]);
+  });
+
+  it("returns nothing for a domain with no concepts", () => {
+    const graph = buildConceptGraph([makeConcept({ id: "a", domain: "ml" })]);
+    expect(getDomainEntryPoints(graph, "dl")).toEqual([]);
+  });
+});
+
+describe("getAncestorPath", () => {
+  it("walks from the entry point down to the concept, inclusive", () => {
+    const root = makeConcept({ id: "root" });
+    const middle = makeConcept({
+      id: "middle",
+      relationships: { parents: ["root"] },
+    });
+    const leaf = makeConcept({
+      id: "leaf",
+      relationships: { parents: ["middle"] },
+    });
+    const graph = buildConceptGraph([root, middle, leaf]);
+
+    expect(getAncestorPath(graph, leaf.id).map((c) => c.id)).toEqual([
+      "root",
+      "middle",
+      "leaf",
+    ]);
+  });
+
+  it("returns just the concept itself when it has no parent", () => {
+    const root = makeConcept({ id: "root" });
+    const graph = buildConceptGraph([root]);
+
+    expect(getAncestorPath(graph, root.id).map((c) => c.id)).toEqual(["root"]);
+  });
+
+  it("keeps the first parent when a concept authors more than one", () => {
+    const first = makeConcept({ id: "first" });
+    const second = makeConcept({ id: "second" });
+    const child = makeConcept({
+      id: "child",
+      relationships: { parents: ["first", "second"] },
+    });
+    const graph = buildConceptGraph([first, second, child]);
+
+    expect(getAncestorPath(graph, child.id).map((c) => c.id)).toEqual([
+      "first",
+      "child",
+    ]);
+  });
+
+  it("returns an empty array for an id the graph does not know", () => {
+    const graph = buildConceptGraph([makeConcept({ id: "a" })]);
+    expect(getAncestorPath(graph, "ghost" as ConceptId)).toEqual([]);
+  });
+
+  it("stops rather than looping forever on a parent cycle", () => {
+    const a = makeConcept({ id: "a", relationships: { parents: ["b"] } });
+    const b = makeConcept({ id: "b", relationships: { parents: ["a"] } });
+    const graph = buildConceptGraph([a, b]);
+
+    expect(getAncestorPath(graph, "a" as ConceptId)).toEqual([]);
   });
 });

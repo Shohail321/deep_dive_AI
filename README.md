@@ -146,6 +146,26 @@ are built on Radix primitives rather than hand-rolled, because focus trapping,
 focus restoration, roving-tabindex navigation and ARIA wiring are solved
 problems it would be reckless to reimplement.
 
+## Knowledge map
+
+Visit **`/explore`** — the learner-facing interactive map of the curriculum,
+built on [`@xyflow/react`](https://reactflow.dev). Domains are the only
+nodes shown at first; expanding one reveals its entry-point concepts, and
+expanding a concept reveals its children — nothing beyond what's actually
+been opened is ever rendered, which is what keeps this workable at
+1,000+ concepts. Selecting a concept opens a panel with its summary,
+difficulty, prerequisites, related concepts, recommended next concepts, and
+a "Where does this fit in AI?" breadcrumb, plus a deliberate **Start
+Learning** action — a click never navigates by itself. Search locates a
+concept, expands whatever ancestors are needed to show it, and focuses it.
+
+A **List** tab renders the identical state (`useKnowledgeMapState`, shared
+by both views) as a nested disclosure list — the non-spatial alternative for
+keyboard and screen-reader use, and what mobile leans on more heavily than
+the canvas. See `src/visualizations/components/KnowledgeMap/` — `layout.ts`
+and `nodeState.ts` hold the graph-shape and visual-state logic independent
+of React Flow, so the hardest parts are unit-tested without a DOM.
+
 ## Contribution conventions
 
 - One concern per top-level `src/` folder (see above) — don't reach into

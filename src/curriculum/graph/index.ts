@@ -10,6 +10,8 @@ export {
   findUnreachable,
   findOrphans,
   getDomainRoots,
+  getDomainEntryPoints,
+  getAncestorPath,
   getConceptsInDomain,
 } from "./graph";
 export type { ConceptGraph } from "./graph";

@@ -108,7 +108,11 @@ export default async function DomainOverviewPage({
                 </h2>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {categoryConcepts.map((concept) => (
-                    <li key={concept.id}>
+                    <li
+                      key={concept.id}
+                      id={concept.id}
+                      className="target:ring-accent-solid target:ring-offset-background scroll-mt-8 rounded-full target:ring-2 target:ring-offset-2"
+                    >
                       <ConceptLabel domain={domain}>
                         {concept.title}
                       </ConceptLabel>

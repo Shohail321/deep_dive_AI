@@ -189,6 +189,51 @@ export function getDomainRoots(graph: ConceptGraph): Map<Domain, Concept> {
   return roots;
 }
 
+/**
+ * Every concept that introduces its domain — everything in it with no
+ * same-domain parent — rather than only the first, which `getDomainRoots`
+ * keeps for the homepage's one-ring-per-domain diagram. The knowledge map
+ * expands a domain node into all of them, since a domain legitimately
+ * having more than one entry point is not something a map should hide.
+ */
+export function getDomainEntryPoints(
+  graph: ConceptGraph,
+  domain: Domain,
+): Concept[] {
+  return graph.concepts.filter((concept) => {
+    if (concept.domain !== domain) return false;
+    return !concept.relationships.parents.some(
+      (parentId) => graph.byId.get(parentId)?.domain === domain,
+    );
+  });
+}
+
+/**
+ * The chain from a domain's entry point down to `id`, inclusive, following
+ * the first parent at each step. A concept can author more than one parent,
+ * but a breadcrumb can only show one path — "keep the first" is the same
+ * tie-break `getDomainRoots` already uses for the same reason.
+ *
+ * Returns `[]` for an id the graph does not know, or one that cannot reach a
+ * parentless concept (a parent cycle) rather than looping forever.
+ */
+export function getAncestorPath(graph: ConceptGraph, id: ConceptId): Concept[] {
+  const path: Concept[] = [];
+  const seen = new Set<ConceptId>();
+  let current = graph.byId.get(id);
+
+  while (current) {
+    if (seen.has(current.id)) return []; // parent cycle — the audit's job to report, not this function's.
+    seen.add(current.id);
+    path.unshift(current);
+
+    const parentId = current.relationships.parents[0];
+    current = parentId ? graph.byId.get(parentId) : undefined;
+  }
+
+  return path;
+}
+
 export function getConceptsInDomain(
   graph: ConceptGraph,
   domain: Domain,
